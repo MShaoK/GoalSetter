@@ -12,6 +12,9 @@ let activeWindowId = null;
 
 chrome.runtime.onMessage.addListener(
   (request, sender, response) => {
+    console.log("background.js got a message")
+    console.log("request from: ", request)
+
     // Do we even need to track these with the
     //  messaging system we're given?
     // Yes, because this only updates on page loads.
@@ -20,6 +23,7 @@ chrome.runtime.onMessage.addListener(
     //  data is sent AFTER new pages load, but
     //  on old tabs, this data should all be there 
     //  and up to date.
+    
     // MESSAGE FROM TAB
     if (sender.tab) {
       activeTabId = sender.tab.id;
@@ -43,9 +47,12 @@ chrome.runtime.onMessage.addListener(
       response();
     } else if (request.action === "getStatus") {
       response({startTime: startTime});
+    } else if (request.action === "retrieveData") {
+      response({activeTabId, activeWindowId, tabName: sender.tab.title, tabUrl: sender.tab.url});
     }
   }
 );
+console.log("this is background.js reporting for duty");
 
 chrome.tabs.onActivated.addListener(
   tab => {
@@ -84,4 +91,32 @@ let workActive = false;
 
 const startTimer = () => {
   startTime = Date.now();
+};
+
+
+const retrieveData = () => {
+  console.log('retrieving data')
+  chrome.runtime.sendMessage({
+      action: "retrieveData"
+  }, (response) => {
+      sendData(response);
+  });
+};
+
+
+//sends data every 5 minutes
+// window.setInterval(300000, retrieveData);
+
+
+const sendData = (data) => {
+  console.log('sending data:', data);
+  $.ajax({
+      url: '/', //TO DO: get url
+      method: 'POST',
+      data: $.param(data),
+      success: () => {
+          console.log('Successfully sent data to server')
+      }
+  })
+      .catch((err) => console.log(err));
 };

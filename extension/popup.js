@@ -10,6 +10,7 @@ let timer = null;
 chrome.runtime.sendMessage({
     action: "getStatus"
 }, (response) => {
+
     if (response.startTime !== null) {
         // Setting the value like this will not trigger
         //  change event.
@@ -30,6 +31,8 @@ chrome.runtime.sendMessage({
 //  popup ceases to run once closed.  Duh.
 
 toggleSwitch.addEventListener('change', () => {
+    console.log('toggle change')
+
     if (checkBox.checked) {
         startMonitoring();
     } else {
@@ -60,17 +63,17 @@ const startTimer = (startTime) => {
     this.startTime = startTime;
 
     timer = setInterval(() => {
-        let nextTime = 
+        let nextTime =
             msToTime(Date.now() - this.startTime);
         clock.textContent = nextTime;
     }, 1000);
 }
 
 const msToTime = (duration) => {
-    let milliseconds = parseInt((duration%1000)/100)
-        , seconds = parseInt((duration/1000)%60)
-        , minutes = parseInt((duration/(1000*60))%60)
-        , hours = parseInt((duration/(1000*60*60))%24);
+    let milliseconds = parseInt((duration % 1000) / 100)
+        , seconds = parseInt((duration / 1000) % 60)
+        , minutes = parseInt((duration / (1000 * 60)) % 60)
+        , hours = parseInt((duration / (1000 * 60 * 60)) % 24);
 
     hours = (hours < 10) ? "0" + hours : hours;
     minutes = (minutes < 10) ? "0" + minutes : minutes;
@@ -78,3 +81,7 @@ const msToTime = (duration) => {
 
     return hours + ":" + minutes + ":" + seconds;
 }
+
+
+
+

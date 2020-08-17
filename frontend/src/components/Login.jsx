@@ -1,28 +1,12 @@
+// Docs: https://www.npmjs.com/package/react-google-login
 import React, { useState } from "react";
 import PageLayout from '../components/PageLayout';
+import GoogleLogin from 'react-google-login';
 
 import {
   Container,
   Typography,
-  TextField,
-  Link,
-  Button,
-  Grid,
 } from "@material-ui/core";
-
-
-/**
- * @function onSignIn googleUser.getBasicProfile()
- * @params googleUser {}
- * @interface googleUser.getBasicProfile() {     
-        getId()); 
-        getName());
-        getGivenName());
-        getFamilyName());
-        getImageUrl());
-        getEmail()); 
-      }
- */
 
 
 export default function Login() {
@@ -32,16 +16,24 @@ export default function Login() {
     password: "",
   });
 
-  // [event.target.id]: event.target.value,
+  /**
+   * Response from Google's API
+   * 
+   * @param {*} response contains the Id's, Tokens and profile info
+   */
+  const responseGoogle = (response) => {
+    console.log(response);
+    var id_token = response.getAuthResponse().id_token;
 
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    // axios
-    //   .post("/api/login", user )
-    //   .then(() => {})
-    //   .catch(error => console.log(error));
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://localhost:8000/api/users/1/authentication/');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function () {
+      console.log('Signed in as: ' + xhr.responseText);
+    };
+    xhr.send('idtoken=' + id_token);
   };
+
 
   return (
     <PageLayout>
@@ -49,56 +41,14 @@ export default function Login() {
         <Typography component="h1" variant="h4">
           Log In With Your Google Account
         </Typography>
-        <div className="g-signin2" data-onsuccess="onSignIn" data-theme="dark" />
-        <Typography component="h1" variant="h4">
-          Log In With Your Accounts Credentials
-        </Typography>
-        <form
-          onSubmit={e => handleSubmit(e)}
-        ></form>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              variant="outlined"
-              id="email"
-              type="email"
-              label="Email Address"
-              value={user.email}
-              onChange={setUser}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              variant="outlined"
-              label="Password"
-              type="password"
-              id="password"
-              value={user.password}
-              onChange={setUser}
-            />
-          </Grid>
-        </Grid>
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          color="primary"
-        >
-          Log In
-            </Button>
-        <Grid container justify="flex-end">
-          <Grid item>
-            <Link href="/register" variant="body2">
-              Don't have an account? Sign up
-          </Link>
-          </Grid>
-        </Grid>
+        <GoogleLogin
+          clientId="1004621807794-p8l00rg7mov16oqp0ui2r1hku5po74qq.apps.googleusercontent.com"
+          onSuccess={(response) => { responseGoogle(response) }}
+          onFailure={(response) => { responseGoogle(response) }}
+          isSignedIn={true}
+          cookiePolicy={'single_host_origin'}
+        />
       </Container>
     </PageLayout>
-  )
-
-}
+  );
+};

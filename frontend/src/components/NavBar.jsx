@@ -12,7 +12,7 @@ const HeaderWrapper = styled.header`
     padding: 0 16px;
     position: fixed;
     top: 0;
-    background-image: linear-gradient(to right, ${p => p.theme.primaryColor}, ${p => p.theme.secondaryColor});
+    background-color: antiquewhite;
     border-bottom: 3px solid ${p => p.theme.secondaryColor};
 `;
 
@@ -81,14 +81,6 @@ export default function NavBar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const { id, setTheme } = useContext(ThemeContext);
 
-
-    // function signOut() {
-    //     var auth2 = gapi.auth2.getAuthInstance();
-    //     auth2.signOut().then(function () {
-    //         console.log('User signed out.');
-    //     });
-    // }
-
     return (
         <HeaderWrapper>
             <MobileMenuIcon onClick={() => setMenuOpen(s => !s)}>
@@ -106,8 +98,8 @@ export default function NavBar() {
                 <StyledLink to="/analytics" isActive={pathname === '/analytics'}>
                     Analytics
                 </StyledLink>
-                <StyledLink to="/login" isActive={pathname === '/login'} onclick="signOut()">
-                    Sign Out
+                <StyledLink to="/login" isActive={pathname === '/login'} > 
+                    Sign In
                 </StyledLink>
                 <Toggle isActive={id === 'dark'} onToggle={setTheme} />
             </Menu>
